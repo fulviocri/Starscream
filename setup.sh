@@ -28,34 +28,33 @@ echo -e "\e[0m"
 set_user_aliases() {
 	echo
 	read -p "Setting aliases for user K4l1m3r0. [Press enter to continue]"
-  cat >/home/k4l1m3r0/.bash_aliases <<EOL
-alias ..='cd ..'
-alias cls='clear'
-alias df='df -h'
-alias edit='nano'
-alias fastping='ping -c 100 -s.2'
-alias free='free -h'
-alias h='history'
-alias halt='sudo /sbin/halt'
-alias j='jobs -l'
-alias ll='ls -lah --color=auto'
-alias meminfo='free -m -l -t'
-alias mount='mount | column -t'
-alias nan='nano'
-alias now='date +"%T"'
-alias path='echo -e ${PATH//:/\\n}'
-alias ping5='ping -c 5'
-alias ports='netstat -tulanp'
-alias pscpu='ps auxf | sort -nr -k 3'
-alias psmem='ps auxf | sort -nr -k 4'
-alias reboot='sudo /sbin/reboot'
-alias root='sudo -i'
-alias shutdown='sudo /sbin/shutdown -h now'
-alias su='sudo -i'
-alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
-alias wget='wget -c'
-EOL
-
+	cat >/home/k4l1m3r0/.bash_aliases <<EOL
+	alias ..='cd ..'
+	alias cls='clear'
+	alias df='df -h'
+	alias edit='nano'
+	alias fastping='ping -c 100 -s.2'
+	alias free='free -h'
+	alias h='history'
+	alias halt='sudo /sbin/halt'
+	alias j='jobs -l'
+	alias ll='ls -lah --color=auto'
+	alias meminfo='free -m -l -t'
+	alias mount='mount | column -t'
+	alias nan='nano'
+	alias now='date +"%T"'
+	alias path='echo -e ${PATH//:/\\n}'
+	alias ping5='ping -c 5'
+	alias ports='netstat -tulanp'
+	alias pscpu='ps auxf | sort -nr -k 3'
+	alias psmem='ps auxf | sort -nr -k 4'
+	alias reboot='sudo /sbin/reboot'
+	alias root='sudo -i'
+	alias shutdown='sudo /sbin/shutdown -h now'
+	alias su='sudo -i'
+	alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
+	alias wget='wget -c'
+	EOL
 	echo "DONE"
 }
 
