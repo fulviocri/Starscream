@@ -90,7 +90,6 @@ alias su='sudo -i'
 alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
 alias wget='wget -c'
 EOF
-
 	echo "DONE"
 }
 
@@ -99,16 +98,16 @@ EOF
 set_hostname() {
 	echo
 	read -p "Setting FQDN host name. [Press enter to continue]"
-  read -p "Type the host name: " host_name
-  
-  hostnamectl set-hostname $host_name.cybertron.local
+	read -p "Type the host name: " host_name
+	
+	hostnamectl set-hostname $host_name.cybertron.local
 	echo $host_name.cybertron.local > /etc/hostname
-
+	
 	sed -i '/#domain-name=local/c\domain-name=cybertron.local' /etc/avahi/avahi-daemon.conf
 	sed -i '/publish-domain=yes/s/^#//g' /etc/avahi/avahi-daemon.conf
 	sed -i '/use-ipv6=yes/s/^/#/g' /etc/avahi/avahi-daemon.conf
- 
-  unset host_name
+	
+	unset host_name
 	echo "DONE"
 }
 
