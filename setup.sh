@@ -244,14 +244,23 @@ install_network_packages() {
 	echo
 	read -p "Installing network packages. [Press enter to continue]"
 
-	apt-get install -y i2c-tools ufw
-	sudo apt install -y python3-pip python3-venv python3-smbus
-	sudo apt install -y python3-netifaces python3-requests python3-nmap python3-scapy
-	sudo apt install -y nmap tcpdump doscan nast ettercap-text-only ncat
-	sudo apt install -y arping arpon arp-scan arpwatch
-	sudo apt install -y dhcpdump dhcp-probe dhcping dhcpig dns2tcp dhcpstarv
-	sudo apt install -y dnsenum dnsmap dnsrecon dnswalk dnsutils dnstracer
-	sudo apt install -y backdoor-factory masscan netdiscover macchanger
+	apt install -y i2c-tools ufw
+	apt install -y python3-pip python3-venv python3-smbus
+	apt install -y python3-netifaces python3-requests python3-nmap python3-scapy
+	apt install -y nmap tcpdump doscan nast ettercap-text-only ncat
+	apt install -y arping arpon arp-scan arpwatch
+	apt install -y dhcpdump dhcp-probe dhcping dhcpig dns2tcp dhcpstarv
+	apt install -y dnsenum dnsmap dnsrecon dnswalk dnsutils dnstracer
+	apt install -y masscan netdiscover macchanger sqlite3 command-not-found
+
+	apt install -y ncat ndiff crunch hydra sqlmap wifite dirb gobuster hping3 aircrack-ng cewl
+	apt install -y yersinia lynis macchanger wafw00f wfuzz ffuf rkhunter john dmitry recon-ng
+	apt install -y whatweb parsero dsniff dirsearch chntpw smbmap sublist3r fierce
+	apt install -y firewalk goldeneye httrack nbtscan bettercap binwalk braa chkrootkit
+	apt install -y cewl bluetooth bluez brutespray btscanner bully changeme crack
+	apt install -y creddump7 darkstat doona driftnet
+
+	apt install -y 
 
 	echo "DONE"
 }
