@@ -294,7 +294,7 @@ enable_usbc_ethernet() {
  	echo "dtoverlay=dwc2" >> /boot/firmware/config.txt
 	
 	nmcli con add type ethernet con-name usb0
-	cat >/etc/NetworkManager/system-connections/usb0.nmconnection <<EOL
+	cat <<EOF > /etc/NetworkManager/system-connections/usb0.nmconnection
 [connection]
 id=usb0
 uuid=<random group of characters here>
@@ -311,16 +311,16 @@ method=shared
 method=disabled
 
 [proxy]
-	EOL
+EOF
 
- 	cat >/usr/local/sbin/usb-gadget.sh <<EOL
+ 	cat <<EOF > /usr/local/sbin/usb-gadget.sh
 #!/bin/bash
 nmcli con up usb0
-	EOL
+EOF
  
 	chmod a+rx /usr/local/sbin/usb-gadget.sh
 
- 	cat >/usr/local/sbin/usb-gadget.sh <<EOL
+ 	cat <<EOF > /usr/local/sbin/usb-gadget.sh
 [Unit]
 Description=Ethernet USB gadget
 After=NetworkManager.service
@@ -333,7 +333,7 @@ ExecStart=/usr/local/sbin/usb-gadget.sh
   
 [Install]
 WantedBy=sysinit.target
- 	EOL
+EOF
 	systemctl enable usbgadget.service
 }
 
