@@ -63,7 +63,7 @@ EOF
 set_root_aliases() {
 	echo
   read -p "Setting aliases for user root. [Press enter to continue]"
-  cat >/root/.bash_aliases <<EOL
+  cat <<EOF > /root/.bash_aliases
 alias ..='cd ..'
 alias cls='clear'
 alias df='df -h'
@@ -89,7 +89,7 @@ alias shutdown='sudo /sbin/shutdown -h now'
 alias su='sudo -i'
 alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
 alias wget='wget -c'
-	EOL
+EOF
 
 	echo "DONE"
 }
