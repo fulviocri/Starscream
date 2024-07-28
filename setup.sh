@@ -24,6 +24,112 @@ echo ""
 echo -e "\e[0m"
 
 # ========================================================================================================================================================================
+# Settings Aliases for User K4l1m3r0
+set_user_aliases() {
+  cat >/home/k4l1m3r0/.bash_aliases <<EOL
+alias ..='cd ..'
+alias cls='clear'
+alias df='df -h'
+alias edit='nano'
+alias fastping='ping -c 100 -s.2'
+alias free='free -h'
+alias h='history'
+alias halt='sudo /sbin/halt'
+alias j='jobs -l'
+alias ll='ls -lah --color=auto'
+alias meminfo='free -m -l -t'
+alias mount='mount | column -t'
+alias nan='nano'
+alias now='date +"%T"'
+alias path='echo -e ${PATH//:/\\n}'
+alias ping5='ping -c 5'
+alias ports='netstat -tulanp'
+alias pscpu='ps auxf | sort -nr -k 3'
+alias psmem='ps auxf | sort -nr -k 4'
+alias reboot='sudo /sbin/reboot'
+alias root='sudo -i'
+alias shutdown='sudo /sbin/shutdown -h now'
+alias su='sudo -i'
+alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
+alias wget='wget -c'
+  EOL
+}
+
+# ========================================================================================================================================================================
+# Settings Aliases for Root
+set_root_aliases() {
+  cat >/root/.bash_aliases <<EOL
+alias ..='cd ..'
+alias cls='clear'
+alias df='df -h'
+alias edit='nano'
+alias fastping='ping -c 100 -s.2'
+alias free='free -h'
+alias h='history'
+alias halt='sudo /sbin/halt'
+alias j='jobs -l'
+alias ll='ls -lah --color=auto'
+alias meminfo='free -m -l -t'
+alias mount='mount | column -t'
+alias nan='nano'
+alias now='date +"%T"'
+alias path='echo -e ${PATH//:/\\n}'
+alias ping5='ping -c 5'
+alias ports='netstat -tulanp'
+alias pscpu='ps auxf | sort -nr -k 3'
+alias psmem='ps auxf | sort -nr -k 4'
+alias reboot='sudo /sbin/reboot'
+alias root='sudo -i'
+alias shutdown='sudo /sbin/shutdown -h now'
+alias su='sudo -i'
+alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
+alias wget='wget -c'
+  EOL
+}
+
+# ========================================================================================================================================================================
+# Setting FQDN host name
+set_hostname() {
+  echo ""
+  echo "Setting host name:"
+  read -p "Type the host name: " host_name
+  
+  hostnamectl set-hostname $host_name.cybertron.local
+  
+  unset host_name
+  echo "DONE"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ========================================================================================================================================================================
 # Setting the password for the root user account
 set_root_password() {
 	echo ""
@@ -79,18 +185,7 @@ change_current_datetime() {
 	echo "DONE"
 }
 
-# ========================================================================================================================================================================
-# Setting FQDN host name
-set_hostname() {
-  echo ""
-  echo "Setting host name:"
-  read -p "Type the host name: " host_name
-  
-  hostnamectl set-hostname $host_name.cybertron.local
-  
-  unset host_name
-  echo "DONE"
-}
+
 
 # ========================================================================================================================================================================
 # Cleaning up system
@@ -194,69 +289,7 @@ configure_network() {
 	echo "DONE"
 }
 
-# ========================================================================================================================================================================
-# Settings Aliases for User K4l1m3r0
-set_user_aliases() {
-  cat >/home/k4l1m3r0/.bash_aliases <<EOL
-alias ..='cd ..'
-alias cls='clear'
-alias df='df -h'
-alias edit='nano'
-alias fastping='ping -c 100 -s.2'
-alias free='free -h'
-alias h='history'
-alias halt='sudo /sbin/halt'
-alias j='jobs -l'
-alias ll='ls -lah --color=auto'
-alias meminfo='free -m -l -t'
-alias mount='mount |column -t'
-alias nan='nano'
-alias now='date +"%T"'
-alias path='echo -e ${PATH//:/\\n}'
-alias ping5='ping -c 5'
-alias ports='netstat -tulanp'
-alias pscpu='ps auxf | sort -nr -k 3'
-alias psmem='ps auxf | sort -nr -k 4'
-alias reboot='sudo /sbin/reboot'
-alias root='sudo -i'
-alias shutdown='sudo /sbin/shutdown -h now'
-alias su='sudo -i'
-alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
-alias wget='wget -c'
-  EOL
-}
 
-# ========================================================================================================================================================================
-# Settings Aliases for Root
-set_root_aliases() {
-  cat >/root/.bash_aliases <<EOL
-alias ..='cd ..'
-alias cls='clear'
-alias df='df -h'
-alias edit='nano'
-alias fastping='ping -c 100 -s.2'
-alias free='free -h'
-alias h='history'
-alias halt='sudo /sbin/halt'
-alias j='jobs -l'
-alias ll='ls -lah --color=auto'
-alias meminfo='free -m -l -t'
-alias mount='mount |column -t'
-alias nan='nano'
-alias now='date +"%T"'
-alias path='echo -e ${PATH//:/\\n}'
-alias ping5='ping -c 5'
-alias ports='netstat -tulanp'
-alias pscpu='ps auxf | sort -nr -k 3'
-alias psmem='ps auxf | sort -nr -k 4'
-alias reboot='sudo /sbin/reboot'
-alias root='sudo -i'
-alias shutdown='sudo /sbin/shutdown -h now'
-alias su='sudo -i'
-alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
-alias wget='wget -c'
-  EOL
-}
 
 # ========================================================================================================================================================================
 # Setting the current date & time
@@ -280,12 +313,44 @@ setup_complete() {
 	reboot
 }
 
-set_user_aliases
-set_root_aliases
+# ========================================================================================================================================================================
+# Script Functions
+read -p "Do you want to configure alias for user K4l1m3r0? (y/N)" -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    set_user_aliases
+fi
+
+read -p "Do you want to configure alias for user root? (y/N)" -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    set_root_aliases
+fi
+
+read -p "Do you want to set the FQDN name for the host? (y/N)" -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    set_hostname
+fi
+
+read -p "Do you want to set a password for root user? (y/N)" -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    set_root_password
+fi
 
 
 
-set_root_password
+
+
+
+
+
+
 change_current_datetime
 #set_hostname
 cleanup_system
