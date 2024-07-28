@@ -99,14 +99,14 @@ set_hostname() {
 	echo
 	read -p "Setting FQDN host name. [Press enter to continue]"
 	read -p "Type the host name: " host_name
-	
+
 	hostnamectl set-hostname $host_name.cybertron.local
 	echo $host_name.cybertron.local > /etc/hostname
-	
+
 	sed -i '/#domain-name=local/c\domain-name=cybertron.local' /etc/avahi/avahi-daemon.conf
 	sed -i '/publish-domain=yes/s/^#//g' /etc/avahi/avahi-daemon.conf
 	sed -i '/use-ipv6=yes/s/^/#/g' /etc/avahi/avahi-daemon.conf
-	
+
 	unset host_name
 	echo "DONE"
 }
@@ -116,8 +116,7 @@ set_hostname() {
 set_root_password() {
 	read -p "Do you want to set a password for root user? (y/N)" -n 1 -r
 	echo
-	if [[ $REPLY =~ ^[Yy]$ ]]
-	then
+	if [[ $REPLY =~ ^[Yy]$ ]]; then
 		read -p "New password: " -s root_password_1
 		echo
 		read -p "Retype new password: " -s root_password_2
@@ -128,16 +127,15 @@ set_root_password() {
 			set_root_password
 		fi
 
-		#echo "root:$root_password_1" | chpasswd -e
 		echo -e "$root_password_1\n$root_password_1" | passwd root
-		
+
 		if [ $? -eq 0 ]; then
 			echo "Password changed successfully"
 		else
 			echo "Password change error"
 			set_root_password
 		fi
-		
+
 		unset root_password_1
 		unset root_password_2
 		echo "DONE"
@@ -173,64 +171,64 @@ change_current_datetime() {
 # ========================================================================================================================================================================
 # System update
 system_update() {
-  echo
-  read -p "Starting system update. [Press enter to continue]"
-  
-  UPDATENUM=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep  ^Inst | wc -l)
-  
-  echo "Package to update: $UPDATENUM"
-  
-  if [[ $UPDATENUM > 0 ]]; then
-    apt-get update
-    apt-get -y full-upgrade
-  fi
-  
-  unset UPDATENUM
-  echo "DONE"
+	echo
+	read -p "Starting system update. [Press enter to continue]"
+
+	UPDATENUM=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep  ^Inst | wc -l)
+
+	echo "Package to update: $UPDATENUM"
+
+	if [[ $UPDATENUM > 0 ]]; then
+		apt-get update
+		apt-get -y full-upgrade
+	fi
+
+	unset UPDATENUM
+	echo "DONE"
 }
 
 # ========================================================================================================================================================================
 # Cleaning up system
 system_cleanup() {
-  echo
-  read -p "Cleaning up system. [Press enter to continue]"
-  
-  if systemctl -all list-unit-files systemd-networkd-wait-online.service | grep "systemd-networkd-wait-online.service enabled" ;then
-    echo "Disabling systemd-networkd-wait-online.service"
-    systemctl disable systemd-networkd-wait-online.service
-    systemctl stop systemd-networkd-wait-online.service
-  fi
-  
-  if systemctl -all list-unit-files triggerhappy.service | grep "triggerhappy.service enabled" ;then
-    echo "Disabling triggerhappy.service"
-    systemctl disable triggerhappy.service
-    systemctl stop triggerhappy.service
-    
-    systemctl disable triggerhappy.socket
-    systemctl stop triggerhappy.socket
-  fi
-  
-  if systemctl -all list-unit-files ModemManager | grep "ModemManager enabled" ;then
-    echo "Uninstalling ModemManager and old GCC versions"
-    apt-get remove --purge -y modemmanager
-    apt-get remove --purge -y gcc-7-base gcc-8-base gcc-9-base
-  fi
-  
-  echo "Removing unused packages"
-  apt-get autoremove --purge -y
-  
-  echo "DONE"
+	echo
+	read -p "Cleaning up system. [Press enter to continue]"
+
+	if systemctl -all list-unit-files systemd-networkd-wait-online.service | grep "systemd-networkd-wait-online.service enabled" ;then
+		echo "Disabling systemd-networkd-wait-online.service"
+		systemctl disable systemd-networkd-wait-online.service
+		systemctl stop systemd-networkd-wait-online.service
+	fi
+
+	if systemctl -all list-unit-files triggerhappy.service | grep "triggerhappy.service enabled" ;then
+		echo "Disabling triggerhappy.service"
+		systemctl disable triggerhappy.service
+		systemctl stop triggerhappy.service
+
+		systemctl disable triggerhappy.socket
+		systemctl stop triggerhappy.socket
+	fi
+
+	if systemctl -all list-unit-files ModemManager | grep "ModemManager enabled" ;then
+		echo "Uninstalling ModemManager and old GCC versions"
+		apt-get remove --purge -y modemmanager
+		apt-get remove --purge -y gcc-7-base gcc-8-base gcc-9-base
+	fi
+
+	echo "Removing unused packages"
+	apt-get autoremove --purge -y
+
+	echo "DONE"
 }
 
 # ========================================================================================================================================================================
 # Installing Base Packages
 install_base_packages() {
-  echo
-  read -p "Installing base component. [Press enter to continue]"
-  
-  apt-get install -y build-essential git curl xsltproc rsync tmux
-  
-  echo "DONE"
+	echo
+	read -p "Installing base component. [Press enter to continue]"
+
+	apt-get install -y build-essential git curl xsltproc rsync tmux
+
+	echo "DONE"
 }
 
 # ========================================================================================================================================================================
@@ -239,15 +237,15 @@ install_network_packages() {
 	echo
 	read -p "Installing network packages. [Press enter to continue]"
 
-  apt-get install -y i2c-tools ufw
-  sudo apt install -y python3-pip python3-venv python3-smbus
-  sudo apt install -y python3-netifaces python3-requests python3-nmap python3-scapy
-  sudo apt install -y nmap tcpdump doscan nast ettercap-text-only ncat
-  sudo apt install -y arping arpon arp-scan arpwatch
-  sudo apt install -y dhcpdump dhcp-probe dhcping dhcpig dns2tcp dhcpstarv
-  sudo apt install -y dnsenum dnsmap dnsrecon dnswalk dnsutils dnstracer
-  sudo apt install -y backdoor-factory masscan netdiscover macchanger
-  
+	apt-get install -y i2c-tools ufw
+	sudo apt install -y python3-pip python3-venv python3-smbus
+	sudo apt install -y python3-netifaces python3-requests python3-nmap python3-scapy
+	sudo apt install -y nmap tcpdump doscan nast ettercap-text-only ncat
+	sudo apt install -y arping arpon arp-scan arpwatch
+	sudo apt install -y dhcpdump dhcp-probe dhcping dhcpig dns2tcp dhcpstarv
+	sudo apt install -y dnsenum dnsmap dnsrecon dnswalk dnsutils dnstracer
+	sudo apt install -y backdoor-factory masscan netdiscover macchanger
+
 	echo "DONE"
 }
 
@@ -288,11 +286,11 @@ enable_usbc_ethernet() {
 	read -p "Configuring USB-C Ethernet. [Press enter to continue]"
 
 	cmdline=$(</boot/firmware/cmdline.txt)
- 	cmdline="$cmdline modules-load=dwc2,g_ether"
+	cmdline="$cmdline modules-load=dwc2,g_ether"
 	echo $cmdline > /boot/firmware/cmdline.txt
- 
- 	echo "dtoverlay=dwc2" >> /boot/firmware/config.txt
-	
+
+	echo "dtoverlay=dwc2" >> /boot/firmware/config.txt
+
 	nmcli con add type ethernet con-name usb0
 	cat <<EOF > /etc/NetworkManager/system-connections/usb0.nmconnection
 [connection]
@@ -317,10 +315,10 @@ EOF
 #!/bin/bash
 nmcli con up usb0
 EOF
- 
+
 	chmod a+rx /usr/local/sbin/usb-gadget.sh
 
- 	cat <<EOF > /usr/local/sbin/usb-gadget.sh
+	cat <<EOF > /usr/local/sbin/usb-gadget.sh
 [Unit]
 Description=Ethernet USB gadget
 After=NetworkManager.service
@@ -334,6 +332,7 @@ ExecStart=/usr/local/sbin/usb-gadget.sh
 [Install]
 WantedBy=sysinit.target
 EOF
+
 	systemctl enable usbgadget.service
 }
 
