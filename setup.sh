@@ -28,6 +28,9 @@ echo -e "\e[0m"
 set_user_aliases() {
 	echo
 	read -p "Setting aliases for user K4l1m3r0. [Press enter to continue]"
+
+	rm -f -- /home/k4l1m3r0/.bash_aliases
+
 	cat <<EOF > /home/k4l1m3r0/.bash_aliases
 alias ..='cd ..'
 alias cls='clear'
@@ -62,8 +65,11 @@ EOF
 # Settings Aliases for Root
 set_root_aliases() {
 	echo
-  read -p "Setting aliases for user root. [Press enter to continue]"
-  cat <<EOF > /root/.bash_aliases
+	read -p "Setting aliases for user root. [Press enter to continue]"
+
+	rm -f -- /root/.bash_aliases
+
+	cat <<EOF > /root/.bash_aliases
 alias ..='cd ..'
 alias cls='clear'
 alias df='df -h'
