@@ -5,7 +5,7 @@ set +e
 
 if [ $(id -u) -ne 0 ]
   then echo "Please run $0 as root"
-  exit 1
+	exit 1
 fi
 
 clear
@@ -26,6 +26,8 @@ echo -e "\e[0m"
 # ========================================================================================================================================================================
 # Settings Aliases for User K4l1m3r0
 set_user_aliases() {
+	echo
+	read -p "Setting aliases for user K4l1m3r0. [Press enter to continue]"
   cat >/home/k4l1m3r0/.bash_aliases <<EOL
 alias ..='cd ..'
 alias cls='clear'
@@ -53,11 +55,15 @@ alias su='sudo -i'
 alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
 alias wget='wget -c'
   EOL
+
+	echo "DONE"
 }
 
 # ========================================================================================================================================================================
 # Settings Aliases for Root
 set_root_aliases() {
+	echo
+  read -p "Setting aliases for user root. [Press enter to continue]"
   cat >/root/.bash_aliases <<EOL
 alias ..='cd ..'
 alias cls='clear'
@@ -84,85 +90,63 @@ alias shutdown='sudo /sbin/shutdown -h now'
 alias su='sudo -i'
 alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
 alias wget='wget -c'
-  EOL
+	EOL
+
+	echo "DONE"
 }
 
 # ========================================================================================================================================================================
 # Setting FQDN host name
 set_hostname() {
-  echo ""
-  echo "Setting host name:"
+	echo
+  echo "Setting FQDN host name:"
   read -p "Type the host name: " host_name
   
   hostnamectl set-hostname $host_name.cybertron.local
   
   unset host_name
-  echo "DONE"
+	echo "DONE"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # ========================================================================================================================================================================
 # Setting the password for the root user account
 set_root_password() {
-	echo ""
-	echo "Setting a password for root user account:"
-	read -p "New password: " -s root_password_1
-	echo ""
-	read -p "Retype new password: " -s root_password_2
-	echo ""
+	read -p "Do you want to set a password for root user? (y/N)" -n 1 -r
+	echo
+	if [[ $REPLY =~ ^[Yy]$ ]]
+	then
+		echo
+		echo "Setting a password for root user account:"
+		read -p "New password: " -s root_password_1
+		echo
+		read -p "Retype new password: " -s root_password_2
+		echo
 
-	if [ $root_password_1 != $root_password_2 ]; then
-		echo "Passwords do not match"
-		setrootpassword
+		if [ $root_password_1 != $root_password_2 ]; then
+			echo "Passwords do not match"
+			set_root_password
+		fi
+
+		#echo "root:$root_password_1" | chpasswd -e
+		echo -e "$root_password_1\n$root_password_1" | passwd root
+		
+		if [ $? -eq 0 ]; then
+			echo "Password changed successfully"
+		else
+			echo "Password change error"
+			set_root_password
+		fi
+		
+		unset root_password_1
+		unset root_password_2
+		echo "DONE"
 	fi
-
-	#echo "root:$root_password_1" | chpasswd -e
-	echo -e "$root_password_1\n$root_password_1" | passwd root
-
-	if [ $? -eq 0 ]; then
-		echo "Password changed successfully"
-	else
-		echo "Password change error"
-		exit 1
-	fi
-
-	unset root_password_1
-	unset root_password_2
-	echo "DONE"
 }
 
 # ========================================================================================================================================================================
 # Setting the current date & time
 change_current_datetime() {
-	echo ""
+	echo
 	echo "Setting the current date and time:"
 	date
 	read -p "Is the current date and time correct? (y/n): " correct_date
@@ -176,7 +160,7 @@ change_current_datetime() {
 			timedatectl set-ntp true
 			date
 		else
-			changecurrentdatetime
+			change_current_datetime
 		fi
 	fi
 
@@ -185,11 +169,28 @@ change_current_datetime() {
 	echo "DONE"
 }
 
-
+# ========================================================================================================================================================================
+# System update
+system_update() {
+  echo ""
+  read -p "Starting system update. [Press enter to continue]"
+  
+  UPDATENUM=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep  ^Inst | wc -l)
+  
+  echo "Package to update: $UPDATENUM"
+  
+  if [[ $UPDATENUM > 0 ]]; then
+    apt-get update
+    apt-get -y full-upgrade
+  fi
+  
+  unset UPDATENUM
+  echo "DONE"
+}
 
 # ========================================================================================================================================================================
 # Cleaning up system
-cleanup_system() {
+system_cleanup() {
   echo ""
   read -p "Cleaning up system. [Press enter to continue]"
   
@@ -221,27 +222,8 @@ cleanup_system() {
 }
 
 # ========================================================================================================================================================================
-# System update
-system_update() {
-  echo ""
-  read -p "Starting system update. [Press enter to continue]"
-  
-  UPDATENUM=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep  ^Inst | wc -l)
-  
-  echo "Package to update: $UPDATENUM"
-  
-  if [[ $UPDATENUM > 0 ]]; then
-    apt-get update
-    apt-get -y upgrade
-  fi
-  
-  unset UPDATENUM
-  echo "DONE"
-}
-
-# ========================================================================================================================================================================
-# Installing base component
-install_base_component() {
+# Installing Base Packages
+install_base_packages() {
   echo ""
   read -p "Installing base component. [Press enter to continue]"
   
@@ -251,10 +233,10 @@ install_base_component() {
 }
 
 # ========================================================================================================================================================================
-# Installing networking component
-install_network_component() {
+# Installing Network Packages
+install_network_packages() {
 	echo ""
-	read -p "Installing networking component. [Press enter to continue]"
+	read -p "Installing network packages. [Press enter to continue]"
 
   apt-get install -y i2c-tools ufw
   sudo apt install -y python3-pip python3-venv python3-smbus
@@ -291,6 +273,36 @@ configure_network() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ========================================================================================================================================================================
 # Setting the current date & time
 change_system_locale() {
@@ -306,7 +318,7 @@ change_system_locale() {
 }
 
 # ========================================================================================================================================================================
-# Setup completed
+# Setup Completed
 setup_complete() {
 	echo ""
 	read -p "StarScream Setup completed. [Press enter to reboot]"
@@ -315,51 +327,30 @@ setup_complete() {
 
 # ========================================================================================================================================================================
 # Script Functions
-read -p "Do you want to configure alias for user K4l1m3r0? (y/N)" -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    set_user_aliases
-fi
 
-read -p "Do you want to configure alias for user root? (y/N)" -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    set_root_aliases
-fi
-
-read -p "Do you want to set the FQDN name for the host? (y/N)" -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    set_hostname
-fi
-
-read -p "Do you want to set a password for root user? (y/N)" -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    set_root_password
-fi
-
-
-
-
-
-
-
-
-
+set_user_aliases
+set_root_aliases
+set_hostname
+set_root_password
 change_current_datetime
-#set_hostname
-cleanup_system
 system_update
-install_base_component
-install_network_component
+system_cleanup
+install_base_packages
+install_network_packages
+
+
+
+setup_complete
+
+
+
+
+
+
+
 configure_network
 copy_config_files
-python_libs
-customize_telegram_bot
+
+
 change_system_locale
-setup_complete
+
