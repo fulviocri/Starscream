@@ -54,7 +54,7 @@ alias shutdown='sudo /sbin/shutdown -h now'
 alias su='sudo -i'
 alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
 alias wget='wget -c'
-  EOL
+EOL
 
 	echo "DONE"
 }
@@ -336,7 +336,6 @@ ExecStart=/usr/local/sbin/usb-gadget.sh
 [Install]
 WantedBy=sysinit.target
  	EOL
-
 	systemctl enable usbgadget.service
 }
 
