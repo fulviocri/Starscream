@@ -28,7 +28,7 @@ echo -e "\e[0m"
 set_user_aliases() {
 	echo
 	read -p "Setting aliases for user K4l1m3r0. [Press enter to continue]"
- 	cat <<EOF > /home/k4l1m3r0/.bash_aliases
+	cat <<EOF > /home/k4l1m3r0/.bash_aliases
 alias ..='cd ..'
 alias cls='clear'
 alias df='df -h'
@@ -54,7 +54,7 @@ alias shutdown='sudo /sbin/shutdown -h now'
 alias su='sudo -i'
 alias wanip='curl -w "\n" http://whatismyip.akamai.com/'
 alias wget='wget -c'
-	EOF
+EOF
 	echo "DONE"
 }
 
