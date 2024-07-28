@@ -99,11 +99,16 @@ alias wget='wget -c'
 # Setting FQDN host name
 set_hostname() {
 	echo
-  echo "Setting FQDN host name:"
+	read -p "Setting FQDN host name. [Press enter to continue]"
   read -p "Type the host name: " host_name
   
   hostnamectl set-hostname $host_name.cybertron.local
-  
+	echo $host_name.cybertron.local > /etc/hostname
+
+	sed -i '/#domain-name=local/c\domain-name=cybertron.local' /etc/avahi/avahi-daemon.conf
+	sed -i '/publish-domain=yes/s/^#//g' /etc/avahi/avahi-daemon.conf
+	sed -i '/use-ipv6=yes/s/^/#/g' /etc/avahi/avahi-daemon.conf
+ 
   unset host_name
 	echo "DONE"
 }
@@ -115,8 +120,6 @@ set_root_password() {
 	echo
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
-		echo
-		echo "Setting a password for root user account:"
 		read -p "New password: " -s root_password_1
 		echo
 		read -p "Retype new password: " -s root_password_2
@@ -147,7 +150,7 @@ set_root_password() {
 # Setting the current date & time
 change_current_datetime() {
 	echo
-	echo "Setting the current date and time:"
+	read -p "Setting the current date and time. [Press enter to continue]"
 	date
 	read -p "Is the current date and time correct? (y/n): " correct_date
 
@@ -172,7 +175,7 @@ change_current_datetime() {
 # ========================================================================================================================================================================
 # System update
 system_update() {
-  echo ""
+  echo
   read -p "Starting system update. [Press enter to continue]"
   
   UPDATENUM=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep  ^Inst | wc -l)
@@ -191,7 +194,7 @@ system_update() {
 # ========================================================================================================================================================================
 # Cleaning up system
 system_cleanup() {
-  echo ""
+  echo
   read -p "Cleaning up system. [Press enter to continue]"
   
   if systemctl -all list-unit-files systemd-networkd-wait-online.service | grep "systemd-networkd-wait-online.service enabled" ;then
@@ -224,7 +227,7 @@ system_cleanup() {
 # ========================================================================================================================================================================
 # Installing Base Packages
 install_base_packages() {
-  echo ""
+  echo
   read -p "Installing base component. [Press enter to continue]"
   
   apt-get install -y build-essential git curl xsltproc rsync tmux
@@ -235,7 +238,7 @@ install_base_packages() {
 # ========================================================================================================================================================================
 # Installing Network Packages
 install_network_packages() {
-	echo ""
+	echo
 	read -p "Installing network packages. [Press enter to continue]"
 
   apt-get install -y i2c-tools ufw
@@ -252,61 +255,24 @@ install_network_packages() {
 
 # ========================================================================================================================================================================
 # Configuring UFW firewall
-configure_network() {
-	echo ""
+configure_firewall() {
+	echo
 	read -p "Configuring UFW firewall. [Press enter to continue]"
 
 	rfkill unblock wifi
 
-	for filename in /var/lib/systemd/rfkill/*:wlan ; do
-		echo 0 > $filename
-	done
-
 	ufw default deny incoming
 	ufw default allow outgoing
-	ufw deny in on eth0
-	ufw allow in on wlan0 to any port ssh
+	ufw allow ssh
 	yes | ufw enable
 
 	echo "DONE"
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ========================================================================================================================================================================
 # Setting the current date & time
 change_system_locale() {
-	echo ""
+	echo
 	read -p "Configuring the System Locale. [Press enter to continue]"
 
 	rm -f /etc/localtime
@@ -318,9 +284,66 @@ change_system_locale() {
 }
 
 # ========================================================================================================================================================================
+# Enable USB-C Ethernet
+enable_usbc_ethernet() {
+	echo ""
+	read -p "Configuring USB-C Ethernet. [Press enter to continue]"
+
+	cmdline=$(</boot/firmware/cmdline.txt)
+ 	cmdline="$cmdline modules-load=dwc2,g_ether"
+	echo $cmdline > /boot/firmware/cmdline.txt
+ 
+ 	echo "dtoverlay=dwc2" >> /boot/firmware/config.txt
+	
+	nmcli con add type ethernet con-name usb0
+	cat >/etc/NetworkManager/system-connections/usb0.nmconnection <<EOL
+[connection]
+id=usb0
+uuid=<random group of characters here>
+type=ethernet
+autoconnect=true
+interface-name=usb0
+
+[ethernet]
+
+[ipv4]
+method=shared
+
+[ipv6]
+method=disabled
+
+[proxy]
+	EOL
+
+ 	cat >/usr/local/sbin/usb-gadget.sh <<EOL
+#!/bin/bash
+nmcli con up usb0
+	EOL
+ 
+	chmod a+rx /usr/local/sbin/usb-gadget.sh
+
+ 	cat >/usr/local/sbin/usb-gadget.sh <<EOL
+[Unit]
+Description=Ethernet USB gadget
+After=NetworkManager.service
+Wants=NetworkManager.service
+  
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/usb-gadget.sh
+  
+[Install]
+WantedBy=sysinit.target
+ 	EOL
+
+	systemctl enable usbgadget.service
+}
+
+# ========================================================================================================================================================================
 # Setup Completed
 setup_complete() {
-	echo ""
+	echo
 	read -p "StarScream Setup completed. [Press enter to reboot]"
 	reboot
 }
@@ -337,20 +360,7 @@ system_update
 system_cleanup
 install_base_packages
 install_network_packages
-
-
-
-setup_complete
-
-
-
-
-
-
-
-configure_network
-copy_config_files
-
-
+configure_firewall
 change_system_locale
-
+enable_usbc_ethernet
+setup_complete
