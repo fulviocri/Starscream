@@ -174,7 +174,7 @@ system_update() {
 	echo
 	read -p "Starting system update. [Press enter to continue]"
 
-	UPDATENUM=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep  ^Inst | wc -l)
+	UPDATENUM=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s upgrade  | /bin/grep  ^Inst | wc -l)
 
 	echo "Package to update: $UPDATENUM"
 
