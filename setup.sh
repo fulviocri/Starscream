@@ -107,11 +107,12 @@ set_hostname() {
 	read -p "Type the host name: " host_name
 
 	hostnamectl set-hostname $host_name.cybertron.local
-	echo $host_name.cybertron.local > /etc/hostname
-
+	echo "$host_name.cybertron.local" > /etc/hostname
+	echo "127.0.0.1	$host_name.cybertron.local	$host_name" >> /etc/hosts
+	
 	sed -i '/#domain-name=local/c\domain-name=cybertron.local' /etc/avahi/avahi-daemon.conf
-	sed -i '/publish-domain=yes/s/^#//g' /etc/avahi/avahi-daemon.conf
-	sed -i '/use-ipv6=yes/s/^/#/g' /etc/avahi/avahi-daemon.conf
+	sed -i '/#publish-domain=yes/c\publish-domain=yes' /etc/avahi/avahi-daemon.conf
+	sed -i '/use-ipv6=yes/c\#use-ipv6=yes' /etc/avahi/avahi-daemon.conf
 
 	unset host_name
 	echo "DONE"
@@ -324,7 +325,7 @@ EOF
 
 	chmod a+rx /usr/local/sbin/usb-gadget.sh
 
-	cat <<EOF > /usr/local/sbin/usb-gadget.sh
+	cat <<EOF > /lib/systemd/system/usbgadget.service
 [Unit]
 Description=Ethernet USB gadget
 After=NetworkManager.service
